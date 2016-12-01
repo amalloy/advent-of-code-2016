@@ -31,11 +31,21 @@ def parseCommand(s):
 def parseLine(s):
     return (parseCommand(x) for x in s.split(", "))
 
+def manhattanDistance((x, y)):
+    return abs(x) + abs(y)
+
 if __name__ == '__main__':
     for line in sys.stdin:
         pos = Position()
         commands = list(parseLine(line))
-        for command in commands:
-            pos.applyCommand(command)
-        (x, y) = pos.location
-        print abs(x) + abs(y)
+        part2 = None
+        visited = set()
+        for (dir, dist) in commands:
+            pos.turn(dir)
+            for i in xrange(dist): # so we can record intermediate locations
+                pos.walk(1)
+                if part2 is None and pos.location in visited:
+                    part2 = pos.location
+                else:
+                    visited.add(pos.location)
+        print manhattanDistance(pos.location), manhattanDistance(part2)
