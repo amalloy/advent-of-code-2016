@@ -32,11 +32,13 @@ def sort_frequencies(dict):
 def run_checksum(name):
     return ''.join([c for (c, n) in sort_frequencies(frequencies(name))[:5]])
 
-def rotate(c, amt):
-    if c == '-':
-        return " "
-    x = ord(c) - ord('a')
-    return chr((x + amt) % 26 + ord('a'))
+def rotate(amt):
+    def rotator(c):
+        if c == '-':
+            return " "
+        x = ord(c) - ord('a')
+        return chr((x + amt) % 26 + ord('a'))
+    return rotator
 
 if __name__ == '__main__':
     sum = 0
@@ -44,6 +46,6 @@ if __name__ == '__main__':
         if room.checksum == run_checksum(room.name):
             sum = sum + room.sector
             if ('northpole object storage' ==
-                ''.join(map(lambda c: rotate(c, room.sector), room.name))):
+                ''.join(map(rotate(room.sector), room.name))):
                 print "part 2:", room.sector
     print "part 1:", sum
