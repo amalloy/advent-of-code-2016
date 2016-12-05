@@ -1,5 +1,5 @@
 import sys
-from itertools import islice, imap, ifilter, count
+from itertools import count
 import hashlib
 
 class Cracker:
