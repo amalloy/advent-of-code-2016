@@ -6,4 +6,5 @@ if __name__ == '__main__':
         for i, c in enumerate(line.rstrip()):
             freqs[i][c] = freqs[i].get(c, 0) + 1
 
-    print "".join([max(m.items(), key=lambda x: x[1])[0] for m in freqs])
+    for f in [max, min]:
+        print "".join([f(m.items(), key=lambda x: x[1])[0] for m in freqs])
