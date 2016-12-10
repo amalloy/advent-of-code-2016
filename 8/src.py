@@ -55,3 +55,4 @@ if __name__ == '__main__':
         g.apply(parse(line.rstrip()).transform(g))
 
     print sum(1 for y in range(g.height) for x in range(g.width) if g.grid[y][x] == '#')
+    g.render()
