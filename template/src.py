@@ -1,6 +1,6 @@
 import sys
 
-if __name__ == 'main':
+if __name__ == '__main__':
     for line in sys.stdin:
         print line.rstrip()
     print "done"
