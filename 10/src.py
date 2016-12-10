@@ -59,6 +59,8 @@ def run_graph(lines):
     for (id, num) in inputs:
         graph[('bot', id)].receive(num)
 
+    print reduce(lambda x, y: x * y, [graph[('output', i)].contents()[0] for i in range(3)], 1)
+
 
 if __name__ == '__main__':
     run_graph(line.rstrip() for line in sys.stdin)
