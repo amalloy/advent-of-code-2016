@@ -19,7 +19,6 @@ arg = space *> (Lit <$> int
 
 bytecode name f = f <$> (string name *> arg)
 
-instr :: CharParser () Instr
 instr = bytecode "cpy" Cpy <*> arg
     <|> bytecode "inc" Inc
     <|> bytecode "dec" Dec
