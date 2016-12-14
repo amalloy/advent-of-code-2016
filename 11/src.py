@@ -121,7 +121,6 @@ class Node:
                 rooms[i] = new_room
                 rooms[dest] = self.rooms[dest].add(removals)
                 yield (1,
-                       'move %s from floor %d to floor %d' % (repr(removals), i, dest),
                        Node(rooms, dest))
 
     def __repr__(self):
@@ -139,25 +138,24 @@ class Node:
 def search(root):
     q = Queue.PriorityQueue()
     visited = set([])
-    q.put((0 + root.goal_estimate(), 0, [], root))
+    q.put((0 + root.goal_estimate(), 0, root))
     iterations = 0
     while not q.empty():
-        (estimated_cost, spent_cost, path, node) = q.get()
+        (estimated_cost, spent_cost, node) = q.get()
         iterations = iterations + 1
         if iterations % 1 == 5000:
             print "Moved %d so far, about %d from goal" % (spent_cost, estimated_cost)
-        for (spend, edge, next) in node.nexts():
+        for (spend, next) in node.nexts():
             if next in visited:
                 continue
             kind = next.evaluate()
             if kind == 'fail':
                 continue
             new_cost = spent_cost + spend
-            new_path = path + [edge]
             if kind == 'succeed':
-                return (new_cost, new_path, next)
+                return (new_cost, next)
             visited.add(next)
-            q.put_nowait((new_cost + next.goal_estimate(), new_cost, new_path, next))
+            q.put_nowait((new_cost + next.goal_estimate(), new_cost, next))
 
 # The first floor contains a thulium generator, a thulium-compatible microchip, a plutonium generator, and a strontium generator.
 # The second floor contains a plutonium-compatible microchip and a strontium-compatible microchip.
