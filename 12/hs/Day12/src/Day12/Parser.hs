@@ -26,4 +26,4 @@ instr = bytecode "cpy" Cpy <*> arg
     <|> bytecode "jnz" Jnz <*> arg
 
 parseInstr :: String -> Instr
-parseInstr = either undefined id . runParser instr () "input"
+parseInstr = either (error "no parse") id . runParser instr () "input"
