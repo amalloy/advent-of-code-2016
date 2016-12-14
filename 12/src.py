@@ -34,7 +34,7 @@ class Jnz:
 
 class Literal:
     def __init__(self, val):
-        self.val = int(val)
+        self.val = val
 
     def __repr__(self):
         return '[lit %d]' % self.val
@@ -50,7 +50,7 @@ class Computer:
     pass
 
 parse_value = parsec.choice(parsec.letter().parsecmap(Register),
-                            parsec.regex(r'-?\d+').parsecmap(Literal))
+                            parsec.regex(r'-?\d+').parsecmap(int).parsecmap(Literal))
 parse_args = parsec.separated(parse_value, parsec.space(), 1, maxt=2)
 instructions = {'cpy': Cpy, 'inc': Inc, 'dec': Dec, 'jnz': Jnz}
 parse_instr = reduce(parsec.choice, [parsec.string(k).result(v) for (k, v) in instructions.items()])
