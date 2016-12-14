@@ -60,6 +60,25 @@ def apply_args(ctor):
             .compose(parse_args.parsecmap(lambda args: ctor(*args))))
 parse_line = parse_instr.bind(apply_args)
 
+def regex_parse(line):
+  def arg(x):
+    m = regex.match(r'-?\d+', x)
+    if m:
+      return int(x)
+    return x
+
+  m = regex.match(r'cpy (-?\d+|[a-d]) ([a-d])', line)
+  if m:
+    return Cpy(arg(m.group(1)), m.group(2))
+  m = regex.match(r'inc ([a-d])', line)
+  if m:
+    return Inc(m.group(1))
+  m = regex.match(r'dec ([a-d])', line)
+  if m:
+    return Dec(m.group(1))
+  m = regex.match(r'jnz (-?\d+|[a-d]) (-?\d+|[a-d])', line)
+  return Jnz(arg(m.group(1)), arg(m.group(2)))
+
 if __name__ == '__main__':
     for line in sys.stdin:
-        print parse_line.parse(line.rstrip())
+        print regex_parse(line.rstrip())
