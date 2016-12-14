@@ -1,3 +1,5 @@
+module Day12.Parser where
+
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Combinator
 
@@ -15,13 +17,13 @@ int = do
 arg = space *> (Lit <$> int
                 <|> Reg <$> anyChar)
 
+bytecode name f = f <$> (string name *> arg)
+
 instr :: CharParser () Instr
-instr = Cpy <$> (string "cpy" *> arg) <*> arg
-    <|> Inc <$> (string "inc" *> arg)
-    <|> Dec <$> (string "dec" *> arg)
-    <|> Jnz <$> (string "jnz" *> arg) <*> arg
+instr = bytecode "cpy" Cpy <*> arg
+    <|> bytecode "inc" Inc
+    <|> bytecode "dec" Dec
+    <|> bytecode "jnz" Jnz <*> arg
 
 parseInstr :: String -> Instr
 parseInstr = either undefined id . runParser instr () "input"
-
-main = interact $ unlines . map (show . parseInstr) . lines
