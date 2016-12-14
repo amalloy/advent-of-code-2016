@@ -60,10 +60,6 @@ def apply_args(ctor):
             .compose(parse_args.parsecmap(lambda args: ctor(*args))))
 parse_line = parse_instr.bind(apply_args)
 
-def parse(line):
-    pass
-
 if __name__ == '__main__':
     for line in sys.stdin:
         print parse_line.parse(line.rstrip())
-    print "done"
