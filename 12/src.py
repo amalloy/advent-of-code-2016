@@ -115,6 +115,12 @@ def regex_parse(line):
 if __name__ == '__main__':
     instrs = [parse_line.parse(line.rstrip()) for line in sys.stdin]
     regs = {k: 0 for k in 'abcd'}
-    cpu = Computer(instrs, regs)
-    cpu.run_program()
-    print cpu.registers['a']
+
+    cpu1 = Computer(instrs, regs.copy())
+    cpu1.run_program()
+    print cpu1.registers['a']
+
+    regs['c'] = 1
+    cpu2 = Computer(instrs, regs.copy())
+    cpu2.run_program()
+    print cpu2.registers['a']
