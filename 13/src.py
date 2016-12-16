@@ -4,6 +4,8 @@ goal = (31, 39)
 puzzle_input = 1358
 
 def wall((x, y)):
+    if x < 0 or y < 0:
+        return True
     arbitrary = puzzle_input + x*x + 3*x + 2*x*y + y + y*y
     return bin(arbitrary).count("1") % 2 == 1
 
