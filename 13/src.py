@@ -54,5 +54,25 @@ def search(root):
             visited.add(uniq_key)
             q.put_nowait((new_cost + next.goal_estimate(), new_cost, next))
 
+def traverse(node, limit):
+    visited = {node.uniq_key(): node}
+    frontier = {node.uniq_key(): node}
+    while limit > 0:
+        new_frontier = {}
+        for k, node in frontier.items():
+            for (_, next) in node.nexts():
+                if wall(next.coord):
+                    continue
+                k = next.uniq_key()
+                if not k in visited:
+                    visited[k] = next
+                    new_frontier[k] = next
+        frontier = new_frontier
+        limit = limit - 1
+
+    return len(visited)
+
+
 if __name__ == '__main__':
     print search(Node((1,1)))
+    print traverse(Node((1,1)), 50)
