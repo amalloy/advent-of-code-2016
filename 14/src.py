@@ -3,7 +3,7 @@ import itertools
 import re
 from md5 import md5
 
-puzzle_input = 'abc' # 'yjdafjpo'
+puzzle_input = 'yjdafjpo'
 
 def key(n):
   return md5(puzzle_input + str(n)).hexdigest()
@@ -20,7 +20,7 @@ def otp_keys(horizon):
     update_lookahead(i + horizon)
     triple = re.search(r'(.)\1{2}', key(i))
     if triple:
-      if lookahead[triple.group(1)] >= i:
+      if lookahead[triple.group(1)] > i:
         yield i
 
 if __name__ == '__main__':
