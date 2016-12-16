@@ -25,5 +25,4 @@ def otp_keys(horizon):
 
 if __name__ == '__main__':
   keys = otp_keys(1000)
-  for ret in enumerate(keys):
-    print ret
+  print itertools.islice(keys, 63, 64).next()
