@@ -10,7 +10,10 @@ def iterate(f, x):
         yield x
         x = f(x)
 
+def solve(init, num_rows):
+    return sum(s.count('.') for s in itertools.islice(iterate(next, init), num_rows))
+
 if __name__ == '__main__':
     start = sys.stdin.next().rstrip()
-    rows = iterate(next, start)
-    print sum(s.count('.') for s in itertools.islice(rows, 40))
+    print "part1: %d" % solve(start, 40)
+    print "part2: %d" % solve(start, 400000)
