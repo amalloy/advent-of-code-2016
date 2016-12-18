@@ -1,5 +1,6 @@
 import sys
 import Queue
+import itertools
 from md5 import md5
 
 puzzle_input = 'pvhmgsws'
@@ -34,23 +35,25 @@ class Node:
         return [(1, Node((y + dy, x + dx), self.path + dir))
                 for (dir, (dy, dx)) in doors(self.path)]
 
-def search(root):
-    q = Queue.PriorityQueue()
-    q.put((0 + root.goal_estimate(), 0, root))
-    iterations = 0
-    while not q.empty():
-        (estimated_cost, spent_cost, node) = q.get()
-        iterations = iterations + 1
-        if iterations % 1 == 5000:
-            print "Moved %d so far, about %d from goal" % (spent_cost, estimated_cost)
+def paths(root):
+    q = [(0, root)]
+    while q:
+        (spent_cost, node) = q.pop()
         for (spend, next) in node.nexts():
             kind = next.evaluate()
             if kind == 'fail':
                 continue
             new_cost = spent_cost + spend
             if kind == 'succeed':
-                return (new_cost, next)
-            q.put_nowait((new_cost + next.goal_estimate(), new_cost, next))
+                yield (new_cost, next)
+            else:
+                q.append((new_cost, next))
 
 if __name__ == '__main__':
-    pass
+    solutions = itertools.imap(lambda x: x[1].path, paths(Node((0,0), '')))
+    low = solutions.next()
+    hi = low
+    for soln in solutions:
+        low = min([low, soln], key=len)
+        hi = max([hi, soln], key=len)
+    print "part1: %s, part2: %s" % (low, hi)
