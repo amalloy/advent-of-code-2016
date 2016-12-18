@@ -12,13 +12,14 @@ def parse(line):
 
     return (prime, residue)
 
-def prune(times, (prime, residue)):
-    return itertools.ifilter(lambda t: t % prime == residue, times)
+def combine((p, n), (q, m)):
+    x = n
+    while x % q != m:
+        x = x + p
+    return (p * q, x)
 
 def solve(constraints):
-    constraints = sorted(constraints, reverse=True)
-    times = reduce(prune, constraints, itertools.count())
-    return times.next()
+    return reduce(combine, sorted(constraints, reverse=True))[1]
 
 if __name__ == '__main__':
     constraints = [parse(line.rstrip()) for line in sys.stdin]
