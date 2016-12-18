@@ -27,3 +27,4 @@ def checksum_filled_disk(size):
 
 if __name__ == '__main__':
     print checksum_filled_disk(272)
+    print checksum_filled_disk(35651584)
