@@ -20,6 +20,11 @@ class Rotation:
         amt = self.f(s)
         return [((i + amt) % len(s), s[i]) for i in xrange(len(s))]
 
+    # very gross to have undo depend on apply. in principle i think this
+    # could be done by calculating, based on where the looked-for character
+    # ended up, the unique place it must have come from; but it's hard.
+    # also, we'd have to undo the lambda-based approach in favor of two
+    # different classes, PositionalRotation and LetterRotation or something.
     def undo(self, s):
         for i in xrange(len(s)):
             speculative = Rotation(lambda _: i)
