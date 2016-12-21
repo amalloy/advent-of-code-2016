@@ -9,6 +9,9 @@ class Swap:
         (x, y) = self.f(s)
         return [(x, s[y]), (y, s[x])]
 
+    def undo(self, s):
+        return self.transform(s)
+
 class Rotation:
     def __init__(self, f):
         self.f = f
@@ -17,6 +20,16 @@ class Rotation:
         amt = self.f(s)
         return [((i + amt) % len(s), s[i]) for i in xrange(len(s))]
 
+    def undo(self, s):
+        for i in xrange(len(s)):
+            speculative = Rotation(lambda _: i)
+            inverse_transform = speculative.transform(s)
+            transformed = apply(s, inverse_transform)
+            undone = apply(transformed, self.transform(transformed))
+            if undone == s:
+                print "rotating by %d goes from %s to %s" % (i, "".join(undone), "".join(transformed))
+                return inverse_transform
+
 class Reversal:
     def __init__(self, x, y):
         self.x = x
@@ -24,6 +37,9 @@ class Reversal:
 
     def transform(self, s):
         return [(i+ self.x, s[self.n + self.x - i - 1]) for i in xrange(self.n)]
+
+    def undo(self, s):
+        return self.transform(s)
 
 class Move:
     def __init__(self, x, y):
@@ -36,6 +52,9 @@ class Move:
         else:
             shift = [(i, s[i - 1]) for i in xrange(self.x, self.y, -1)]
         return [(self.y, s[self.x])] + shift
+
+    def undo(self, s):
+        return Move(self.y, self.x).transform(s)
 
 def apply(s, transformation):
     ret = s[:]
@@ -80,8 +99,16 @@ def update_password(s, rule):
     ret = apply(s, rule.transform(s))
     return ret
 
+def crack_password(s, rule):
+    print "'%s', %s" % ("".join(s), rule.explanation)
+    ret = apply(s, rule.undo(s))
+    return ret
+
 if __name__ == '__main__':
     rules = [parse_with_info(line.rstrip()) for line in sys.stdin]
-    password = list('abcdefgh')
+    password = list('abcde')
     part1 = reduce(update_password, rules, password)
     print "part1: %s" % "".join(part1)
+
+    part2 = reduce(crack_password, rules[::-1], list('decab'))
+    print "part2: %s" % "".join(part2)
