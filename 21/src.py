@@ -27,12 +27,15 @@ class Reversal:
 
 class Move:
     def __init__(self, x, y):
-        (x, y) = (min(x, y), max(x, y))
         self.x = x
         self.y = y
 
     def transform(self, s):
-        return [(self.y, s[self.x])] + ([(i, s[i + 1]) for i in xrange(self.x, self.y)])
+        if self.x < self.y:
+            shift = [(i, s[i + 1]) for i in xrange(self.x, self.y)]
+        else:
+            shift = [(i, s[i - 1]) for i in xrange(self.x, self.y, -1)]
+        return [(self.y, s[self.x])] + shift
 
 def apply(s, transformation):
     ret = s[:]
