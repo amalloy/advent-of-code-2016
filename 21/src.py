@@ -106,9 +106,9 @@ def crack_password(s, rule):
 
 if __name__ == '__main__':
     rules = [parse_with_info(line.rstrip()) for line in sys.stdin]
-    password = list('abcde')
+    password = list('abcdefgh')
     part1 = reduce(update_password, rules, password)
     print "part1: %s" % "".join(part1)
 
-    part2 = reduce(crack_password, rules[::-1], list('decab'))
+    part2 = reduce(crack_password, rules[::-1], list('fbgdceah'))
     print "part2: %s" % "".join(part2)
