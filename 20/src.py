@@ -21,7 +21,15 @@ def collapse(rules):
 if __name__ == '__main__':
     rules = collapse(sorted(map(parse, sys.stdin)))
     (lo, hi) = rules.next()
+    allowed = lo
+    prev = hi
     if lo > 0:
-        print 0
+        print "part1: 0"
     else:
-        print hi + 1
+        print "part1: %d" % (hi + 1)
+
+    for lo, hi in rules:
+        allowed = allowed + (lo - prev - 1)
+        prev = hi
+
+    print "part2: %d" % allowed
