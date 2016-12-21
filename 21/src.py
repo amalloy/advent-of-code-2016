@@ -27,7 +27,6 @@ class Rotation:
             transformed = apply(s, inverse_transform)
             undone = apply(transformed, self.transform(transformed))
             if undone == s:
-                print "rotating by %d goes from %s to %s" % (i, "".join(undone), "".join(transformed))
                 return inverse_transform
 
 class Reversal:
@@ -95,12 +94,10 @@ def parse_with_info(line):
     return rule
 
 def update_password(s, rule):
-    print "'%s', %s" % ("".join(s), rule.explanation)
     ret = apply(s, rule.transform(s))
     return ret
 
 def crack_password(s, rule):
-    print "'%s', %s" % ("".join(s), rule.explanation)
     ret = apply(s, rule.undo(s))
     return ret
 
