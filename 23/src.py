@@ -76,6 +76,25 @@ class Tgl:
     def __repr__(self):
         return 'tgl %s' % self.offset
 
+# pseudo-instructions used as optimization targets
+class Opt:
+    def __init__(self, src, dst):
+        self.src = src
+        self.dst = dst
+
+    def apply(self, computer):
+        regs = computer.registers
+        self.dst.write(regs, self.invoke(self.src.eval(regs), self.dst.eval(regs)))
+        self.src.write(regs, 0)
+
+class Add(Opt):
+    def invoke(self, a, b):
+        return a + b
+
+class Mul(Opt):
+    def invoke(self, a, b):
+        return a * b
+
 class Literal:
     def __init__(self, val):
         self.val = val
