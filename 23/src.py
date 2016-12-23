@@ -49,7 +49,7 @@ class Jnz:
             computer.ip = computer.ip + self.offset.eval(regs) - 1
 
     def __repr__(self):
-        return 'jnz %s %s' % (self.reg, self.offset)
+        return 'jnz %s %s' % (self.arg, self.offset)
 
 class Literal:
     def __init__(self, val):
