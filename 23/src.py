@@ -132,6 +132,25 @@ class Computer:
             self.program[self.ip].apply(self)
             self.ip = self.ip + 1
 
+def optimize_addition_loops(program):
+    i = 0
+    while i < len(program) - 2:
+        (op1, op2, op3) = program[i:i+3]
+        if isinstance(op1, Dec) and isinstance(op2, Inc):
+            (op1, op2) = (op2, op1)
+        if isinstance(op1, Inc) and isinstance(op2, Dec) and isinstance(op3, Jnz):
+            try: # just assume argument types line up, continue on exception
+                if op3.offset.val == -2 and op3.arg.reg == op2.reg.reg:
+                    program[i:i+3] = [Add(op2.reg, op1.reg),
+                                      Jnz(Literal(0), Literal(0)),
+                                      Jnz(Literal(0), Literal(0))]
+                    i = i + 2
+            except:
+                pass
+        i = i + 1
+
+    return program
+
 parse_value = parsec.choice(parsec.letter().parsecmap(Register),
                             parsec.regex(r'-?\d+').parsecmap(int).parsecmap(Literal))
 parse_args = parsec.separated(parse_value, parsec.space(), 1, maxt=2)
@@ -164,6 +183,10 @@ def regex_parse(line):
 
 if __name__ == '__main__':
     instrs = [parse_line.parse(line.rstrip()) for line in sys.stdin]
+    print instrs
+    print "---------------------"
+    print optimize_addition_loops(list(instrs))
+    raise
     regs = {k: 0 for k in 'abcd'}
     regs['a'] = 7
 
