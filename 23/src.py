@@ -9,7 +9,10 @@ class Cpy:
 
     def apply(self, computer):
         regs = computer.registers
-        regs[self.dst.reg] = self.src.eval(regs)
+        self.dst.write(regs, self.src.eval(regs))
+
+    def toggle(self):
+        return Jnz(self.src, self.dst)
 
     def __repr__(self):
         return 'cpy %s %s' % (self.src, self.dst)
@@ -20,8 +23,10 @@ class Inc:
 
     def apply(self, computer):
         regs = computer.registers
-        r = self.reg.reg
-        regs[r] = regs[r] + 1
+        self.reg.write(regs, 1 + self.reg.eval(regs))
+
+    def toggle(self):
+        return Dec(self.reg)
 
     def __repr__(self):
         return 'inc %s' % self.reg
@@ -32,8 +37,10 @@ class Dec:
 
     def apply(self, computer):
         regs = computer.registers
-        r = self.reg.reg
-        regs[r] = regs[r] - 1
+        self.reg.write(regs, self.reg.eval(regs) - 1)
+
+    def toggle(self):
+        return Inc(self.reg)
 
     def __repr__(self):
         return 'dec %s' % self.reg
@@ -48,6 +55,9 @@ class Jnz:
         if self.arg.eval(regs) != 0:
             computer.ip = computer.ip + self.offset.eval(regs) - 1
 
+    def toggle(self):
+        return Cpy(self.arg, self.offset)
+
     def __repr__(self):
         return 'jnz %s %s' % (self.arg, self.offset)
 
@@ -58,6 +68,9 @@ class Literal:
     def eval(self, registers):
         return self.val
 
+    def write(self, registers, value):
+        pass # Tgl has made this literal appear in an invalid place
+
     def __repr__(self):
         return '[lit %d]' % self.val
 
@@ -67,6 +80,9 @@ class Register:
 
     def eval(self, registers):
         return registers[self.reg]
+
+    def write(self, registers, value):
+        registers[self.reg] = value
 
     def __repr__(self):
         return '[reg %s]' % self.reg
