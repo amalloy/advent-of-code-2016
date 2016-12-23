@@ -17,7 +17,7 @@ def parse(line):
     m = re.match(node_regex, line)
     node = Node()
     (x, y, size, used, avail, _) = tuple(map(int, m.groups()))
-    node.pos = (x, y)
+    node.pos = (y, x)
     node.size = size
     node.used = used
     node.avail = avail
@@ -45,9 +45,27 @@ def part1_brute_force(nodes):
                     if src.used != 0 and dst.avail >= src.used and src.pos != dst.pos])
                for src in nodes)
 
+def to_grid(node):
+    if node.pos == (0, 34):
+        return (node.pos, 'B')
+    if node.pos == (0, 0):
+        return (node.pos, 'A')
+    if node.used == 0:
+        print 'start: %s' % (node.pos,)
+        return (node.pos, '_')
+    if node.used > 200:
+        return (node.pos, '#')
+    return (node.pos, '.')
+
+def part2(nodes):
+    return dict(map(to_grid, nodes))
+
 
 if __name__ == '__main__':
     nodes = [parse(line.rstrip())
              for line in itertools.islice(sys.stdin, 2, None)] # drop 2
-    print part1_brute_force(nodes)
+    (y, x) = max(nodes, key = lambda node: sum(node.pos)).pos
     print part1(nodes)
+    grid = part2(nodes)
+    for j in xrange(y + 1):
+        print "".join(grid[(j, i)] for i in xrange(x + 1))
