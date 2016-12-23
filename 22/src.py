@@ -17,8 +17,7 @@ def parse(line):
     m = re.match(node_regex, line)
     node = Node()
     (x, y, size, used, avail, _) = tuple(map(int, m.groups()))
-    node.x = x
-    node.y = y
+    node.pos = (x, y)
     node.size = size
     node.used = used
     node.avail = avail
@@ -26,20 +25,27 @@ def parse(line):
     return node
 
 def part1(nodes):
-    sizes = sorted(nodes, key=lambda node: node.size)
+    sizes = sorted(nodes, key=lambda node: node.used)
     avails = sorted(nodes, key=lambda node: node.avail)
     compatible = 0
     i = 0
     for src in sizes:
-        while i < len(avails) and avails[i].avail < src.size:
+        while i < len(avails) and avails[i].avail < src.used:
             i = i + 1
         compatible = compatible + len(avails) - i
-        if src.avail >= src.size:
+        if src.avail >= src.used:
             compatible = compatible - 1
 
     return compatible
 
+def part1_brute_force(nodes):
+    return sum(len([dst for dst in nodes
+                    if dst.avail >= src.used and src.pos != dst.pos])
+               for src in nodes)
+
+
 if __name__ == '__main__':
     nodes = [parse(line.rstrip())
              for line in itertools.islice(sys.stdin, 2, None)] # drop 2
+    print part1_brute_force(nodes)
     print part1(nodes)
