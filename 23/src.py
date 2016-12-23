@@ -61,6 +61,21 @@ class Jnz:
     def __repr__(self):
         return 'jnz %s %s' % (self.arg, self.offset)
 
+class Tgl:
+    def __init__(self, offset):
+        self.offset = offset
+
+    def apply(self, computer):
+        target = computer.ip + self.offset.eval(computer.registers)
+        if target != computer.ip and target >= 0 and target < len(computer.program):
+            computer.program[target] = computer.program[target].toggle()
+
+    def toggle(self):
+        return Inc(self.offset)
+
+    def __repr__(self):
+        return 'tgl %s' % self.offset
+
 class Literal:
     def __init__(self, val):
         self.val = val
@@ -101,7 +116,7 @@ class Computer:
 parse_value = parsec.choice(parsec.letter().parsecmap(Register),
                             parsec.regex(r'-?\d+').parsecmap(int).parsecmap(Literal))
 parse_args = parsec.separated(parse_value, parsec.space(), 1, maxt=2)
-instructions = {'cpy': Cpy, 'inc': Inc, 'dec': Dec, 'jnz': Jnz}
+instructions = {'cpy': Cpy, 'inc': Inc, 'dec': Dec, 'jnz': Jnz, 'tgl': Tgl}
 parse_instr = reduce(parsec.choice, [parsec.string(k).result(v) for (k, v) in instructions.items()])
 
 def apply_args(ctor):
@@ -131,12 +146,8 @@ def regex_parse(line):
 if __name__ == '__main__':
     instrs = [parse_line.parse(line.rstrip()) for line in sys.stdin]
     regs = {k: 0 for k in 'abcd'}
+    regs['a'] = 7
 
-    cpu1 = Computer(instrs, regs.copy())
+    cpu1 = Computer(instrs, regs)
     cpu1.run_program()
     print cpu1.registers['a']
-
-    regs['c'] = 1
-    cpu2 = Computer(instrs, regs.copy())
-    cpu2.run_program()
-    print cpu2.registers['a']
