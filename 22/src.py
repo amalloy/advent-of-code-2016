@@ -25,8 +25,21 @@ def parse(line):
     # ignore use%
     return node
 
+def part1(nodes):
+    sizes = sorted(nodes, key=lambda node: node.size)
+    avails = sorted(nodes, key=lambda node: node.avail)
+    compatible = 0
+    i = 0
+    for src in sizes:
+        while i < len(avails) and avails[i].avail < src.size:
+            i = i + 1
+        compatible = compatible + len(avails) - i
+        if src.avail >= src.size:
+            compatible = compatible - 1
+
+    return compatible
+
 if __name__ == '__main__':
     nodes = [parse(line.rstrip())
              for line in itertools.islice(sys.stdin, 2, None)] # drop 2
-    for node in nodes:
-        print vars(node)
+    print part1(nodes)
