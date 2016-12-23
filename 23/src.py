@@ -148,6 +148,13 @@ if __name__ == '__main__':
     regs = {k: 0 for k in 'abcd'}
     regs['a'] = 7
 
-    cpu1 = Computer(instrs, regs)
+    cpu1 = Computer(list(instrs), regs)
     cpu1.run_program()
     print cpu1.registers['a']
+
+    regs = {k: 0 for k in 'abcd'}
+    regs['a'] = 12
+
+    cpu2 = Computer(list(instrs), regs)
+    cpu2.run_program()
+    print cpu2.registers['a']
