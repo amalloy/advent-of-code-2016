@@ -30,6 +30,8 @@ def part1(nodes):
     compatible = 0
     i = 0
     for src in sizes:
+        if src.used == 0:
+            continue
         while i < len(avails) and avails[i].avail < src.used:
             i = i + 1
         compatible = compatible + len(avails) - i
@@ -40,7 +42,7 @@ def part1(nodes):
 
 def part1_brute_force(nodes):
     return sum(len([dst for dst in nodes
-                    if dst.avail >= src.used and src.pos != dst.pos])
+                    if src.used != 0 and dst.avail >= src.used and src.pos != dst.pos])
                for src in nodes)
 
 
