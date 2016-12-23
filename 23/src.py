@@ -145,9 +145,8 @@ def optimize_addition_loops(program):
         if isinstance(op1, Inc) and isinstance(op2, Dec) and isinstance(op3, Jnz):
             try: # just assume argument types line up, continue on exception
                 if op3.offset.val == -2 and op3.arg.reg == op2.reg.reg:
-                    program[i:i+3] = [Opt(op1.reg, [op2.reg]),
-                                      Jnz(Literal(0), Literal(0)),
-                                      Jnz(Literal(0), Literal(0))]
+                    program[i:i+3] = ([Opt(op1.reg, [op2.reg])] +
+                                      [Jnz(Literal(0), Literal(0))] * 2)
                     i = i + 2
             except:
                 pass
