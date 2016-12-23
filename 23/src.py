@@ -68,7 +68,9 @@ class Tgl:
     def apply(self, computer):
         target = computer.ip + self.offset.eval(computer.registers)
         if target != computer.ip and target >= 0 and target < len(computer.program):
+            computer.deoptimize()
             computer.program[target] = computer.program[target].toggle()
+            computer.optimize()
 
     def toggle(self):
         return Inc(self.offset)
@@ -124,8 +126,16 @@ class Register:
 class Computer:
     def __init__(self, program, registers):
         self.program = program
+        self.optimize()
         self.registers = registers
         self.ip = 0
+
+    def deoptimize(self):
+        self.program = self.real_program
+
+    def optimize(self):
+        self.real_program = self.program
+        self.program = optimize_addition_loops(list(self.program))
 
     def run_program(self):
         while self.ip < len(self.program):
@@ -183,10 +193,10 @@ def regex_parse(line):
 
 if __name__ == '__main__':
     instrs = [parse_line.parse(line.rstrip()) for line in sys.stdin]
-    print instrs
-    print "---------------------"
-    print optimize_addition_loops(list(instrs))
-    raise
+    # print instrs
+    # print "---------------------"
+    # print optimize_addition_loops(list(instrs))
+    # raise
     regs = {k: 0 for k in 'abcd'}
     regs['a'] = 7
 
