@@ -80,22 +80,16 @@ class Tgl:
 
 # pseudo-instructions used as optimization targets
 class Opt:
-    def __init__(self, src, dst):
-        self.src = src
+    def __init__(self, dst, srcs):
         self.dst = dst
+        self.srcs = srcs
 
     def apply(self, computer):
         regs = computer.registers
-        self.dst.write(regs, self.invoke(self.src.eval(regs), self.dst.eval(regs)))
-        self.src.write(regs, 0)
-
-class Add(Opt):
-    def invoke(self, a, b):
-        return a + b
-
-class Mul(Opt):
-    def invoke(self, a, b):
-        return a * b
+        self.dst.write(regs, self.dst.eval(regs) +
+                       reduce(lambda x, y: x * y.eval(regs), self.srcs, 1))
+        for src in self.srcs:
+            src.write(regs, 0)
 
 class Literal:
     def __init__(self, val):
@@ -151,7 +145,7 @@ def optimize_addition_loops(program):
         if isinstance(op1, Inc) and isinstance(op2, Dec) and isinstance(op3, Jnz):
             try: # just assume argument types line up, continue on exception
                 if op3.offset.val == -2 and op3.arg.reg == op2.reg.reg:
-                    program[i:i+3] = [Add(op2.reg, op1.reg),
+                    program[i:i+3] = [Opt(op1.reg, [op2.reg]),
                                       Jnz(Literal(0), Literal(0)),
                                       Jnz(Literal(0), Literal(0))]
                     i = i + 2
