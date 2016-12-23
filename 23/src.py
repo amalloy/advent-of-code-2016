@@ -129,7 +129,7 @@ class Computer:
 
     def optimize(self):
         self.real_program = self.program
-        self.program = optimize_addition_loops(list(self.program))
+        self.program = optimize_multiplication_loops(optimize_addition_loops(list(self.program)))
 
     def run_program(self):
         while self.ip < len(self.program):
@@ -153,6 +153,23 @@ def optimize_addition_loops(program):
         i = i + 1
 
     return program
+
+def optimize_multiplication_loops(program):
+    i = 0
+    while i < len(program) - 4:
+        (op1, _, _, op4, op5) = program[i:i+5]
+        if isinstance(op1, Opt) and isinstance(op4, Dec) and isinstance(op5, Jnz):
+            try: # just assume argument types line up, continue on exception
+                if len(op1.srcs) == 1 and op5.offset.val == -5 and op5.arg.reg == op4.reg.reg:
+                    program[i:i+5] = ([Opt(op1.dst, op1.srcs + [op5.arg])] +
+                                      [Jnz(Literal(0), Literal(0))] * 4)
+                    i = i + 4
+            except:
+                print "failed to optimize multiplication of %s" % program[i:i+5]
+        i = i + 1
+
+    return program
+
 
 parse_value = parsec.choice(parsec.letter().parsecmap(Register),
                             parsec.regex(r'-?\d+').parsecmap(int).parsecmap(Literal))
