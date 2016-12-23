@@ -203,10 +203,6 @@ def regex_parse(line):
 
 if __name__ == '__main__':
     instrs = [parse_line.parse(line.rstrip()) for line in sys.stdin]
-    # print instrs
-    # print "---------------------"
-    # print optimize_addition_loops(list(instrs))
-    # raise
     regs = {k: 0 for k in 'abcd'}
     regs['a'] = 7
 
