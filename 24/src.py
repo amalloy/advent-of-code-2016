@@ -3,15 +3,16 @@ import sets
 import Queue
 
 class Node:
-    def __init__(self, maze, pos, pickups):
+    def __init__(self, maze, pos, pickups, origin):
         self.maze = maze
         self.pos = pos
         self.pickups = pickups
+        self.origin = origin
 
     def evaluate(self):
         (y, x) = self.pos
         try:
-            if not self.pickups:
+            if not self.pickups and self.pos == self.origin:
                 return 'succeed'
             if self.maze[y][x] == '#':
                 return 'fail'
@@ -30,10 +31,12 @@ class Node:
                     else:
                         new_pickups = self.pickups
 
-                    yield (1, Node(self.maze, new_pos, new_pickups))
+                    yield (1, Node(self.maze, new_pos, new_pickups, self.origin))
 
     def goal_estimate(self):
-        return min(self.dist(pickup) for pickup in self.pickups)
+        if self.pickups:
+            return min(self.dist(pickup) for pickup in self.pickups)
+        return self.dist(self.origin)
 
     def dist(self, (y, x)):
         (j, i) = self.pos
@@ -70,7 +73,7 @@ def parse(lines):
                 start = (y, x)
             elif c in '123456789':
                 pickups.add((y, x))
-    return Node(maze, start, sets.ImmutableSet(pickups))
+    return Node(maze, start, sets.ImmutableSet(pickups), start)
 
 if __name__ == '__main__':
     root = parse(line.rstrip() for line in sys.stdin)
